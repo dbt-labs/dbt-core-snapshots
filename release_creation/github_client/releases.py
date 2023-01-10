@@ -1,4 +1,5 @@
 import copy
+import imp
 import logging
 import os
 import requests
@@ -8,10 +9,10 @@ from github import Github
 from github.GithubException import GithubException
 from github.GitRelease import GitRelease
 from github.GitReleaseAsset import GitReleaseAsset
+from snapshot.create import SNAPSHOT_REQ_NAME_PREFIX
 
 _GH_SNAPSHOT_REPO = "dbt-labs/dbt-core-snapshots"
 _GH_ACCESS_TOKEN = os.environ["GH_ACCESS_TOKEN"]
-_SNAP_REQ_NAME = "snapshot_requirements"
 
 logger = logging.getLogger(__name__)
 
@@ -81,7 +82,7 @@ def _diff_snapshot_requirements(
     if latest_release:
         diff_result = ""
         release_reqs = [
-            _asset for _asset in latest_release.get_assets() if _SNAP_REQ_NAME in _asset.name
+            _asset for _asset in latest_release.get_assets() if SNAPSHOT_REQ_NAME_PREFIX in _asset.name
         ]
         snapshot_req = _get_local_snapshot_reqs(snapshot_req_path=snapshot_req_path)
         release_req = _get_gh_release_asset(release_reqs[0])
@@ -113,7 +114,8 @@ def create_new_release_for_version(
     gh = get_github_client()
     release_tag = str(release_version)
     repo = gh.get_repo(_GH_SNAPSHOT_REPO)
-    reqs_files = [x for x in assets if _SNAP_REQ_NAME in x]
+    logger.info(f"Assets for release: {assets.keys()}")
+    reqs_files = [x for x in assets if SNAPSHOT_REQ_NAME_PREFIX in x]
 
     release_body = _diff_snapshot_requirements(
         assets[reqs_files[0]], latest_release=latest_release

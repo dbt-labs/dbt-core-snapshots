@@ -1,7 +1,7 @@
 set -e
+export DBT_PSYCOPG2_NAME=psycopg2
 rm -rf target
-mkdir target
-
+mkdir target 
 pip install -r $1/requirements/$2.requirements.txt \
 --no-index  \
 --force-reinstall \

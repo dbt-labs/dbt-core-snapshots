@@ -7,7 +7,7 @@ import shutil
 
 _OUTPUT_ARCHIVE_FILE_BASE = "dbt-core-all-adapters-snapshot"
 _FILE_DIR = os.path.dirname(os.path.realpath(__file__))
-
+SNAPSHOT_REQ_NAME_PREFIX = "snapshot_requirements"
 
 def _get_local_os() -> str:
     local_sys = platform.system()
@@ -100,6 +100,6 @@ def generate_snapshot(target_version: Version) -> Dict[str, str]:
 
     assets = {}
     assets[f"snapshot_core_all_adapters_{local_os}_{py_major_minor}.zip"] = py_version_archive_path + ".zip"
-    assets[f"snapshot_requirements_{py_major_minor}.txt"] = requirements_file
+    assets[f"{SNAPSHOT_REQ_NAME_PREFIX}_{py_major_minor}.txt"] = requirements_file
 
     return assets
